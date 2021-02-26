@@ -96,3 +96,4 @@ std::vector<svg::Circle> DrawStop(const std::deque<Stop>& stops, RenderSettings&
 std::vector<svg::Text> DrawStopName(const std::deque<Stop>& stops, RenderSettings& settings, SphereProjector& projector);
 
 json::Node GetMapOfRoad(::transpot_guide::TransportCatalogue& transport_catalog, RenderSettings& settings, int id);
+

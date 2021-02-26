@@ -47,14 +47,14 @@ void InputData(TransportCatalogue& transport_catalog, json::Array data) {
     for (json::Node& stop : bus.AsMap()["stops"s].AsArray()) {
       stops_.push_back(std::move(stop.AsString()));
     }
-    if (!bus.AsMap()["is_roundtrip"s].AsBool()) {
-      std::vector<std::string> rev_stop;
-      for (auto itr = stops_.rbegin() + 1; itr < stops_.rend(); ++itr) {
-        rev_stop.push_back(*itr);
-      }
-      stops_.insert(stops_.end(), std::make_move_iterator(rev_stop.begin()),
-                    std::make_move_iterator(rev_stop.end()));
-    }
+//    if (!bus.AsMap()["is_roundtrip"s].AsBool()) {
+//      std::vector<std::string> rev_stop;
+//      for (auto itr = stops_.rbegin() + 1; itr < stops_.rend(); ++itr) {
+//        rev_stop.push_back(*itr);
+//      }
+//      stops_.insert(stops_.end(), std::make_move_iterator(rev_stop.begin()),
+//                    std::make_move_iterator(rev_stop.end()));
+//    }
 
     transport_catalog.AddRoute(bus.AsMap()["name"s].AsString(), stops_, bus.AsMap()["is_roundtrip"s].AsBool());
   }

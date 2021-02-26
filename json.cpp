@@ -1,8 +1,7 @@
 #include "json.h"
 
-#include <variant>
 #include <sstream>
-
+#include <variant>
 
 static int max_null = 4;
 static int max_bool = 5;
@@ -11,23 +10,21 @@ using namespace std;
 
 namespace json {
 
-
-bool operator== (const Node& lhs, const Node& rhs) {
+bool operator==(const Node& lhs, const Node& rhs) {
   return lhs.GetValue() == rhs.GetValue();
 }
 
-bool operator!= (const Node& lhs, const Node& rhs) {
+bool operator!=(const Node& lhs, const Node& rhs) {
   return !(lhs.GetValue() == rhs.GetValue());
 }
 
-bool operator== (const Document& lhs, const Document& rhs) {
+bool operator==(const Document& lhs, const Document& rhs) {
   return lhs.GetRoot() == rhs.GetRoot();
 }
 
-bool operator!= (const Document& lhs, const Document& rhs) {
+bool operator!=(const Document& lhs, const Document& rhs) {
   return !(lhs.GetRoot() == rhs.GetRoot());
 }
-
 
 Node LoadNumber(std::istream& input) {
   using namespace std::literals;
@@ -101,14 +98,14 @@ namespace {
 
 Node LoadNode(istream& input);
 
-//class ParsingError : public std::runtime_error {
+// class ParsingError : public std::runtime_error {
 // public:
 //  using runtime_error::runtime_error;
 //};
 
 Node LoadInt(istream& input) {
   return LoadNumber(input);
-//  return Node(0);
+  //  return Node(0);
 }
 
 Node LoadString(istream& input) {
@@ -116,7 +113,6 @@ Node LoadString(istream& input) {
   string line;
   bool no_error = false;
   while (input.get(ch)) {
-
     if (ch == '"') {
       no_error = true;
       break;
@@ -144,7 +140,7 @@ Node LoadString(istream& input) {
   }
 
   if (!no_error) {
-      throw  json::ParsingError("Error parsing string");
+    throw json::ParsingError("Error parsing string");
   }
 
   return Node(move(line));
@@ -155,51 +151,48 @@ Node LoadBool(istream& input) {
   string line;
   int cnt = 0;
   while (cnt != max_bool) {
-      ++cnt;
-      input.get(ch);
-      line += ch;
-      if (line == "true") {
-	  break;
-      }
+    ++cnt;
+    input.get(ch);
+    line += ch;
+    if (line == "true") {
+      break;
+    }
   }
 
   if (line != "true" && line != "false") {
-      throw json::ParsingError("");
+    throw json::ParsingError("");
   }
   if (line == "true") {
-      return Node(true);
+    return Node(true);
   }
-
 
   return Node(false);
 }
 
-
 Node LoadArray(istream& input) {
-    Array result;
-//    bool error = false;
-    for (char c; input >> c && c != ']';) {
-        if (c != ',') {
-            input.putback(c);
-        }
-        result.push_back(LoadNode(input));
+  Array result;
+  //    bool error = false;
+  for (char c; input >> c && c != ']';) {
+    if (c != ',') {
+      input.putback(c);
     }
+    result.push_back(LoadNode(input));
+  }
 
-    return Node(move(result));
+  return Node(move(result));
 }
 
-
- Node LoadDict(istream& input) {
-    Dict result;
-    for (char c; input >> c && c != '}';) {
-        if (c == ',') {
-            input >> c;
-        }
-        string key = LoadString(input).AsString();
-        input >> c;
-        result.insert({move(key), LoadNode(input)});
+Node LoadDict(istream& input) {
+  Dict result;
+  for (char c; input >> c && c != '}';) {
+    if (c == ',') {
+      input >> c;
     }
-    return Node(move(result));
+    string key = LoadString(input).AsString();
+    input >> c;
+    result.insert({move(key), LoadNode(input)});
+  }
+  return Node(move(result));
 }
 
 Node LoadNull(istream& input) {
@@ -207,13 +200,13 @@ Node LoadNull(istream& input) {
   string line;
   int cnt = 0;
   while (cnt != max_null) {
-      ++cnt;
-      input.get(ch);
-      line += ch;
-      ch = ' ';
+    ++cnt;
+    input.get(ch);
+    line += ch;
+    ch = ' ';
   }
   if (line != "null") {
-      throw json::ParsingError("");
+    throw json::ParsingError("");
   }
   return Node();
 }
@@ -223,27 +216,27 @@ Node LoadNode(istream& input) {
   input >> c;
 
   if (c == '[') {
-      if (input >> c) {
-	  input.putback(c);
-	  return LoadArray(input);
-      }
-      throw json::ParsingError("Wrong array");
-  } else if (c == '{') {
-      if (input >> c) {
-	  input.putback(c);
-	  return LoadDict(input);
-      }
-      throw json::ParsingError("Wrong map");
-  } else if (c == '"') {
-      return LoadString(input);
-  } else if (c == 'n') {
+    if (input >> c) {
       input.putback(c);
+      return LoadArray(input);
+    }
+    throw json::ParsingError("Wrong array");
+  } else if (c == '{') {
+    if (input >> c) {
+      input.putback(c);
+      return LoadDict(input);
+    }
+    throw json::ParsingError("Wrong map");
+  } else if (c == '"') {
+    return LoadString(input);
+  } else if (c == 'n') {
+    input.putback(c);
     return LoadNull(input);
   } else if (c == 't' || c == 'f') {
-      input.putback(c);
-      return LoadBool(input);
+    input.putback(c);
+    return LoadBool(input);
   } else if (c == ']' || c == '}') {
-      throw json::ParsingError("");
+    throw json::ParsingError("");
   } else {
     input.putback(c);
     return LoadInt(input);
@@ -267,9 +260,7 @@ Node::Node(bool value) : value_(value), is_bool_(true) {}
 
 Node::Node(Array array) : value_(move(array)), is_array_(true) {}
 
-Node::Node(Dict map): value_(move(map)), is_map_(true) {}
-
-
+Node::Node(Dict map) : value_(move(map)), is_map_(true) {}
 
 bool Node::IsNull() const { return is_null_; }
 
@@ -281,58 +272,56 @@ bool Node::IsDouble() const { return is_double_; }
 
 bool Node::IsPureDouble() const { return is_puredouble_; }
 
-bool Node::IsBool() const {  return is_bool_;}
+bool Node::IsBool() const { return is_bool_; }
 
 bool Node::IsArray() const { return is_array_; }
 
-bool Node::IsMap() const {return is_map_;}
-
-
-
+bool Node::IsMap() const { return is_map_; }
 
 string Node::AsString() const {
   if (!IsString()) {
-      throw std::logic_error("");
+    throw std::logic_error("");
   }
   return std::get<std::string>(value_);
 }
 
 int Node::AsInt() const {
   if (!IsInt()) {
-      throw std::logic_error("");
+    throw std::logic_error("");
   }
   return std::get<int>(value_);
 }
 
 double Node::AsDouble() const {
   if (!IsDouble() && !IsInt()) {
-      throw std::logic_error("");
+    throw std::logic_error("");
   }
   if (IsInt()) {
-      return std::get<int>(value_);
+    return std::get<int>(value_);
   }
   return std::get<double>(value_);
 }
 
- bool  Node::AsBool() const {
-   if (!IsBool()) {
-       throw std::logic_error("");
-   }
-   return std::get<bool>(value_);
+bool Node::AsBool() const {
+  if (!IsBool()) {
+    throw std::logic_error("");
+  }
+  return std::get<bool>(value_);
 }
 
 Array Node::AsArray() const {
   if (!IsArray()) {
-      throw std::logic_error("");;
+    throw std::logic_error("");
+    ;
   }
   return std::get<Array>(value_);
 }
 
 Dict Node::AsMap() const {
-   if (!IsMap()) {
-       throw std::logic_error("");
-   }
-    return std::get<Dict>(value_);
+  if (!IsMap()) {
+    throw std::logic_error("");
+  }
+  return std::get<Dict>(value_);
 }
 
 Document::Document(Node root) : root_(move(root)) {}
@@ -344,25 +333,25 @@ Document Load(istream& input) { return Document{LoadNode(input)}; }
 std::string NodePrinter::operator()(nullptr_t) { return "null"s; }
 
 std::string NodePrinter::operator()(std::string value) {
-  std::string out;
-  out += "\"";
-  for (auto ch : value) {
-    if (ch == '\\') {
-      out += "\\\\";
-    } else if (ch == '\n') {
-      out += "\\\n";
-    } else if (ch == '\r') {
-      out += "\\r";
-    } else if (ch == '\"') {
-      out += "\\\"";
-    } else if (ch == '\t') {
-      out += "\\\t";
+  std::string res;
+  res += "\"";
+  for (auto c : value) {
+    if (c == '\\') {
+      res += R"(\\)";
+    } else if (c == '\"') {
+      res += R"(\")";
+    } else if (c == '\n') {
+      res += R"(\n)";
+    } else if (c == '\r') {
+      res += R"(\r)";
+    } else if (c == '\t') {
+      res += R"(\t)";
     } else {
-      out += ch;
+      res += c;
     }
   }
-  out += "\"";
-  return out;
+  res += "\"";
+  return res;
 }
 
 std::string NodePrinter::operator()(double value) {
@@ -377,47 +366,46 @@ std::string NodePrinter::operator()(int value) {
   return strs.str();
 }
 
-std::string NodePrinter::operator ()(bool value) {
+std::string NodePrinter::operator()(bool value) {
   if (value) {
-      return "true"s;
+    return "true"s;
   }
 
   return "false"s;
 }
 
-std::string NodePrinter::operator ()(Array value) {
- string out = "[";
- bool first = true;
- for (Node& node : value ) {
-     if (first) {
-	 first = false;
-	 out.append(std::visit(NodePrinter{}, node.GetValue()));
-     } else {
-	 out.append(", "s);
-	 out.append(std::visit(NodePrinter{}, node.GetValue()));
-     }
- }
- out += "]";
- return out;
+std::string NodePrinter::operator()(Array value) {
+  string out = "[";
+  bool first = true;
+  for (Node& node : value) {
+    if (first) {
+      first = false;
+      out.append(std::visit(NodePrinter{}, node.GetValue()));
+    } else {
+      out.append(", "s);
+      out.append(std::visit(NodePrinter{}, node.GetValue()));
+    }
+  }
+  out += "]";
+  return out;
 }
 
-std::string NodePrinter::operator ()(Dict value) {
-
-  string out ="{";
+std::string NodePrinter::operator()(Dict value) {
+  string out = "{";
   bool first = true;
   for (auto& pair : value) {
-      if (first) {
-	  first = false;
-      } else {
-	  out.append(", ");
-      }
-      out.append("\"");
-      out.append(pair.first);
-      out.append("\"");
-      out.append(": ");
-      out.append(std::visit(NodePrinter{}, pair.second.GetValue()));
+    if (first) {
+      first = false;
+    } else {
+      out.append(", ");
+    }
+    out.append("\"");
+    out.append(pair.first);
+    out.append("\"");
+    out.append(": ");
+    out.append(std::visit(NodePrinter{}, pair.second.GetValue()));
   }
-  out +=" }";
+  out += " }";
   return out;
 }
 

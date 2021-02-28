@@ -33,9 +33,9 @@ class TransportCatalogue {
 
   std::set<std::string_view> GetBusofStop(std::string_view stop);
 
-  const std::deque<Stop>& GetStops();
+  std::deque<Stop*> GetStops();
 
-  const std::deque<Bus>& GetBus();
+  std::deque<Bus*> GetBus();
 
  private:
   std::deque<Stop> stops_;

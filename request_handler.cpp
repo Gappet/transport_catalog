@@ -62,9 +62,12 @@ json::Node OutputData(TransportCatalogue& transport_catalog, json::Array query,
       out.push_back(GetInfoRoute(transport_catalog,
                                  i.AsMap()["name"].AsString(),
                                  i.AsMap()["id"].AsInt()));
-    } else if (i.AsMap()["type"s] == "Map"s) {
+    }
+    if (i.AsMap()["type"s] == "Map"s) {
       out.push_back(GetMapOfRoad(transport_catalog, setting, i.AsMap()["id"].AsInt()));
-    } else {
+    }
+
+    if (i.AsMap()["type"s] == "Stop"s) {
       out.push_back(GetInfoStop(transport_catalog, i.AsMap()["name"].AsString(),
                                 i.AsMap()["id"].AsInt()));
     }

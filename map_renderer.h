@@ -85,15 +85,15 @@ class SphereProjector {
 };
 
 
-SphereProjector CreatorSphereProjector(std::deque<Stop>& stops, RenderSettings& settings);
+SphereProjector CreatorSphereProjector(std::deque<Stop*>& stops, RenderSettings& settings);
 
-std::vector<svg::Polyline> DrawLineofRoad(const Bus& bus, RenderSettings& settings, SphereProjector& projector);
+std::vector<svg::Polyline> DrawLineofRoad(const Bus* bus, RenderSettings& settings, SphereProjector& projector);
 
-std::vector<svg::Text> DrawNameOfRoad(const std::deque<Bus>& buses, RenderSettings& settings, SphereProjector& projector);
+std::vector<svg::Text> DrawNameOfRoad(const std::deque<Bus*>& buses, RenderSettings& settings, SphereProjector& projector);
 
-std::vector<svg::Circle> DrawStop(const std::deque<Stop>& stops, RenderSettings& settings, SphereProjector& projector);
+std::vector<svg::Circle> DrawStop(const std::deque<Stop*>& stops, RenderSettings& settings, SphereProjector& projector);
 
-std::vector<svg::Text> DrawStopName(const std::deque<Stop>& stops, RenderSettings& settings, SphereProjector& projector);
+std::vector<svg::Text> DrawStopName(const std::deque<Stop*>& stops, RenderSettings& settings, SphereProjector& projector);
 
 json::Node GetMapOfRoad(::transpot_guide::TransportCatalogue& transport_catalog, RenderSettings& settings, int id);
 

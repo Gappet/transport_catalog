@@ -118,8 +118,21 @@ bool TransportCatalogue::IsStop(std::string_view stop) const {
   return stop_coordinate_.count(stop);
 }
 
-const std::deque<Stop>& TransportCatalogue::GetStops() { return stops_; }
+std::deque<Stop*> TransportCatalogue::GetStops() {
+  std::deque<Stop*> stops;
+  for (auto& [first, second] : stop_coordinate_) {
+      stops.push_back(second);
+    }
+  return stops; }
 
-const std::deque<Bus>& TransportCatalogue::GetBus() { return buses_; }
+std::deque<Bus*> TransportCatalogue::GetBus() {
+  std::deque<Bus*> buses;
+  for (auto& [first, second] : routes_) {
+      if (!second->route_stops_.empty()) {
+	  buses.push_back(second);
+      }
+  }
+  return buses;
+}
 
 }  // namespace transpot_guide
